@@ -1,18 +1,33 @@
 package it.unibo.deathnote;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import it.unibo.deathnote.api.DeathNote;
 
-public class DeathnoteImpl implements DeathNote{
-    private final List<String> RULES;
+/**
+ * Implementation of a Death Note that stores written names and
+ * their associated death information in memory.
+ *
+ * <p>This class is not intended to be subclassed.</p>
+ */
+public final class DeathnoteImpl implements DeathNote {
+    private static final double DELTA_CAUSE = 40;
+    private static final double DELTA_DETAILS = 6040;
+    private static final String DEFAULTDEATH = "heart attack";
+    private static final String NAMENULL = "name can't be null";
+    private final List<String> rules; 
     private String lastName;
-    private HashMap<String, DeathInfo> people;
-    private double DELTA_CAUSE = 40;
-    private double DELTA_DETAILS = 6040;
+    private Map<String, DeathInfo> people;
+    private boolean causeCompleted;
+    private boolean detailsCompleted;
 
-    public DeathnoteImpl(){
-        this.RULES = List.of(
+    /**
+     * Creates a new Death Note instance, initializing it with the
+     * predefined set of rules and an empty collection of written names.
+     */
+    public DeathnoteImpl() {
+        this.rules = List.of(
         """
         The human whose name is written in this note shall die.
         """,
@@ -67,109 +82,127 @@ public class DeathnoteImpl implements DeathNote{
         """,
         """
         It is useless trying to erase names written in the Death Note with erasers or
-        white-out.
+        white - out.
         """
         );
     }
-    private static class DeathInfo { 
-        String cause;
-        String details;
-        long nameWrittenTime;
-        long causeWrittenTime;
+
+    @Override
+    public String getRule(final int ruleNumber) {
+        if (ruleNumber < 1 || ruleNumber > this.rules.size()) {
+            throw new IllegalArgumentException("invalid number");
+        }
+        return this.rules.get(ruleNumber - 1); //the +1 is made because the 1st rule
+        //is counted as 0.
     }
 
     @Override
-    public String getRule(int ruleNumber) {
-        if (ruleNumber < 1 || ruleNumber > this.RULES.size()){
-            throw new IllegalArgumentException("invalid number");
-        }
-        return this.RULES.get(ruleNumber+1); //the +1 is made because the 1st rule
-                                            //is counted as 0
-    }
-    @Override
-    public void writeName(String name) {
-        if (name.equals(null)){
-            throw new NullPointerException("name can't be null");
-        }else{
-            DeathInfo info = new DeathInfo();
-            info.nameWrittenTime = System.currentTimeMillis();;
+    public void writeName(final String name) {
+        if (name == null) {
+            throw new NullPointerException(NAMENULL); //NOPMD
+        } else {
+            final DeathInfo info = new DeathInfo();
+            info.nameWrittenTime = System.currentTimeMillis();
             this.people.put(name, info);
             this.lastName = name;
+            this.causeCompleted = false;
+            this.detailsCompleted = false;
         }
-        
     }
+
     @Override
-    public boolean writeDeathCause(String cause) {
-        if (this.lastName.equals(null)){
-            throw new NullPointerException("name can't be null");
+    public boolean writeDeathCause(final String cause) {
+        if (this.lastName == null) {
+            throw new NullPointerException(NAMENULL); //NOPMD
         }
-        if (cause.equals(null) || this.people.isEmpty()) {
+        if (cause == null || this.people.isEmpty()) {
             throw new IllegalStateException("there're no names or the cause os null");
         } else {
-            DeathInfo info = this.people.get(this.lastName);
+            final DeathInfo info = this.people.get(this.lastName);
             info.causeWrittenTime = System.currentTimeMillis();
-            if (info.causeWrittenTime - info.nameWrittenTime <= DELTA_CAUSE){
-                info.cause= cause;
+            if (info.causeWrittenTime - info.nameWrittenTime <= DELTA_CAUSE && !this.causeCompleted) {
+                if (!"".equals(cause)) { //this is made to avoid null pointer exception
+                    info.cause = cause;
+                }
+                this.causeCompleted = true;
                 return true;
             }
             return false;
-        }
-        
+            }
     }
 
     @Override
-    public boolean writeDetails(String details) { 
-        if (this.lastName.equals(null)){
-                throw new NullPointerException("name can't be null");
+    public boolean writeDetails(final String details) { 
+        if (this.lastName == null) {
+                throw new NullPointerException(NAMENULL); //NOPMD
         }
-        if (details.equals(null) || this.people.isEmpty()) {
+        if (details == null || this.people.isEmpty()) {
             throw new IllegalStateException("there're no names or the details are null");
         } else {
-            DeathInfo info = this.people.get(this.lastName);
-            if (System.currentTimeMillis() - info.causeWrittenTime <= DELTA_DETAILS){
+            final DeathInfo info = this.people.get(this.lastName);
+            if (System.currentTimeMillis() - info.causeWrittenTime <= DELTA_DETAILS && !this.detailsCompleted) {
                 info.details = details;
                 return true;
             }
             return false;
         }
     }
+
     @Override
-    public String getDeathCause(String name) {
-        if (!this.isNameWritten(name)){
+    public String getDeathCause(final String name) {
+        if (!this.isNameWritten(name)) {
             throw new IllegalArgumentException("name isn't in the book");
-        }else{
-            if (this.people.get(name).cause.equals(null)){
-                return "heart attack";
-            }else{
-                return this.people.get(name).cause;
-            }
+        } else {
+            return this.people.get(name).cause;
         }
     }
 
     @Override
-    public String getDeathDetails(String name) {
-        if (!this.isNameWritten(name)){
+    public String getDeathDetails(final String name) {
+        if (!this.isNameWritten(name)) {
             throw new IllegalArgumentException("name isn't in the book");
-        }else{
-            if (this.people.get(name).cause.equals(null)){
+        } else {
+            if (this.people.get(name).cause == null) {
                 return "";
-            }else{
+            } else {
                 return this.people.get(name).details;
             }
         }
     }
 
-    
     @Override
-    public boolean isNameWritten(String name) {
-        if(this.people.isEmpty()){
-            return false;
-        }
-        if(this.people.keySet().contains(name)){
-            return true;
-        }
-        return false;
+    public boolean isNameWritten(final String name) {
+        return this.people.isEmpty() && this.people.keySet().contains(name);
     }
 
-    
+    /**
+     * Returns the total number of rules available in this Death Note.
+     *
+     * @return the number of rules defined for this note
+     */
+    public int getNumberOfRules() {
+        return this.rules.size();
+    }
+
+    /**
+     * Returns the default cause of death used when no explicit
+     * cause is specified for a written name.
+     *
+     * @return the default cause of death
+     */
+    public String getDefaultDeath() {
+        return this.DEFAULTDEATH;
+    }
+
+    /**
+     * Internal data holder for a single entry in the Death Note.
+     * It stores the cause and details of death together with the
+     * timestamps related to when the name and the cause were written.
+     */
+    private static final class DeathInfo { 
+        private String cause = DEFAULTDEATH;
+        private String details;
+        private long nameWrittenTime;
+        private long causeWrittenTime;
+    }
 }
