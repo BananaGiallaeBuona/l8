@@ -1,5 +1,6 @@
 package it.unibo.deathnote;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public final class DeathnoteImpl implements DeathNote {
     private static final String NAMENULL = "name can't be null";
     private final List<String> rules; 
     private String lastName;
-    private Map<String, DeathInfo> people;
+    private Map<String, DeathInfo> people; //NOPMD it's says that should be final, but it will be modified
     private boolean causeCompleted;
     private boolean detailsCompleted;
 
@@ -27,6 +28,7 @@ public final class DeathnoteImpl implements DeathNote {
      * predefined set of rules and an empty collection of written names.
      */
     public DeathnoteImpl() {
+        this.people = new HashMap<>();
         this.rules = List.of(
         """
         The human whose name is written in this note shall die.
@@ -112,11 +114,11 @@ public final class DeathnoteImpl implements DeathNote {
 
     @Override
     public boolean writeDeathCause(final String cause) {
-        if (this.lastName == null) {
-            throw new NullPointerException(NAMENULL); //NOPMD
-        }
         if (cause == null || this.people.isEmpty()) {
             throw new IllegalStateException("there're no names or the cause os null");
+        }
+        if (this.lastName == null) {
+            throw new NullPointerException(NAMENULL); //NOPMD
         } else {
             final DeathInfo info = this.people.get(this.lastName);
             info.causeWrittenTime = System.currentTimeMillis();
@@ -133,11 +135,11 @@ public final class DeathnoteImpl implements DeathNote {
 
     @Override
     public boolean writeDetails(final String details) { 
-        if (this.lastName == null) {
-                throw new NullPointerException(NAMENULL); //NOPMD
-        }
         if (details == null || this.people.isEmpty()) {
             throw new IllegalStateException("there're no names or the details are null");
+        }
+        if (this.lastName == null) {
+                throw new NullPointerException(NAMENULL); //NOPMD
         } else {
             final DeathInfo info = this.people.get(this.lastName);
             if (System.currentTimeMillis() - info.causeWrittenTime <= DELTA_DETAILS && !this.detailsCompleted) {
@@ -172,7 +174,7 @@ public final class DeathnoteImpl implements DeathNote {
 
     @Override
     public boolean isNameWritten(final String name) {
-        return this.people.isEmpty() && this.people.keySet().contains(name);
+        return this.people.keySet().contains(name); //!this.people.isEmpty() && 
     }
 
     /**
@@ -201,7 +203,7 @@ public final class DeathnoteImpl implements DeathNote {
      */
     private static final class DeathInfo { 
         private String cause = DEFAULTDEATH;
-        private String details;
+        private String details = "";
         private long nameWrittenTime;
         private long causeWrittenTime;
     }
