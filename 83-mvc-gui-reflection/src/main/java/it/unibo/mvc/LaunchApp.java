@@ -3,6 +3,7 @@ package it.unibo.mvc;
 import java.lang.reflect.InvocationTargetException;
 
 import it.unibo.mvc.api.DrawNumberController;
+import it.unibo.mvc.api.DrawNumberView;
 import it.unibo.mvc.controller.DrawNumberControllerImpl;
 import it.unibo.mvc.model.DrawNumberImpl;
 import it.unibo.mvc.view.DrawNumberStandardOutputView;
@@ -26,12 +27,23 @@ public final class LaunchApp {
      * @throws IllegalAccessException in case of reflection issues
      * @throws IllegalArgumentException in case of reflection issues
      */
-    public static void main(final String... args) {
+    public static void main(final String... args) throws 
+            ClassNotFoundException, 
+            NoSuchMethodException, 
+            InvocationTargetException, 
+            InstantiationException, 
+            IllegalAccessException {
         final var model = new DrawNumberImpl();
         final DrawNumberController app = new DrawNumberControllerImpl(model);
-        app.addView(new DrawNumberSwingView());
-        //I'M adding this to do the point 4 of Mviews
-        app.addView(new DrawNumberStandardOutputView());
+
+        final Class<?> GuiClass = Class.forName(DrawNumberSwingView.class.getName());
+        final Class<?> CuiClass = Class.forName(DrawNumberStandardOutputView.class.getName());
+
+        for (int i = 0; i < 3; i++) {
+            app.addView((DrawNumberView) GuiClass.getDeclaredConstructor().newInstance()); 
+            //I've tried to add only new instance but it's deprecated
+            app.addView((DrawNumberView) CuiClass.getDeclaredConstructor().newInstance());
+        }
     }
 }
 
