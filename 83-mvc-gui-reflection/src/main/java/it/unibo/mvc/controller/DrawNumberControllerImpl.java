@@ -19,7 +19,7 @@ import java.util.Collection;
 public final class DrawNumberControllerImpl implements DrawNumberController {
 
     private final DrawNumber model;
-    private Collection<DrawNumberView> views;
+    private final Collection<DrawNumberView> views;
 
     /**
      * Builds a new game controller provided a game model.

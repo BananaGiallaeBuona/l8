@@ -1,8 +1,11 @@
 package it.unibo.mvc;
 
+import java.lang.reflect.InvocationTargetException;
+
 import it.unibo.mvc.api.DrawNumberController;
 import it.unibo.mvc.controller.DrawNumberControllerImpl;
 import it.unibo.mvc.model.DrawNumberImpl;
+import it.unibo.mvc.view.DrawNumberStandardOutputView;
 import it.unibo.mvc.view.DrawNumberSwingView;
 
 /**
@@ -27,5 +30,8 @@ public final class LaunchApp {
         final var model = new DrawNumberImpl();
         final DrawNumberController app = new DrawNumberControllerImpl(model);
         app.addView(new DrawNumberSwingView());
+        //I'M adding this to do the point 4 of Mviews
+        app.addView(new DrawNumberStandardOutputView());
     }
 }
+

@@ -4,14 +4,23 @@ import it.unibo.mvc.api.DrawNumberView;
 import it.unibo.mvc.api.DrawNumberController;
 import it.unibo.mvc.api.DrawResult;
 
-public class DrawNumberStandardOutputView implements DrawNumberView{
+/**
+ * Implements a view that prints to the standard output.
+ */
+public final class DrawNumberStandardOutputView implements DrawNumberView {
     private DrawNumberController controller;
 
-    DrawNumberStandardOutputView(){
+    /**
+     * Constructs a new DrawNumberStandardOutputView.
+     */
+    public DrawNumberStandardOutputView() {
+        /*
+         * I don't need to add nothing, but there is an error if constructor is empty
+         */
     }
 
     @Override
-    public void setController(DrawNumberController observer) {
+    public void setController(final DrawNumberController observer) {
         this.controller = observer;
     }
 
@@ -21,7 +30,16 @@ public class DrawNumberStandardOutputView implements DrawNumberView{
     }
 
     @Override
-    public void result(DrawResult res) {
+    public void result(final DrawResult res) {
         System.err.println(res); //NOPMD
+    }
+
+    /**
+     * Gets the controller associated with this view.
+     *
+     * @return the controller
+     */
+    public DrawNumberController getController() {
+        return controller;
     }
 }
