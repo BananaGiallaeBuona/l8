@@ -36,13 +36,13 @@ public final class LaunchApp {
         final var model = new DrawNumberImpl();
         final DrawNumberController app = new DrawNumberControllerImpl(model);
 
-        final Class<?> GuiClass = Class.forName(DrawNumberSwingView.class.getName());
-        final Class<?> CuiClass = Class.forName(DrawNumberStandardOutputView.class.getName());
+        final Class<?> guiClass = Class.forName(DrawNumberSwingView.class.getName());
+        final Class<?> cuiClass = Class.forName(DrawNumberStandardOutputView.class.getName());
 
         for (int i = 0; i < 3; i++) {
-            app.addView((DrawNumberView) GuiClass.getDeclaredConstructor().newInstance()); 
+            app.addView((DrawNumberView) guiClass.getDeclaredConstructor().newInstance()); 
             //I've tried to add only new instance but it's deprecated
-            app.addView((DrawNumberView) CuiClass.getDeclaredConstructor().newInstance());
+            app.addView((DrawNumberView) cuiClass.getDeclaredConstructor().newInstance());
         }
     }
 }
