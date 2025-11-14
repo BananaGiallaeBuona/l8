@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Graphical {@link DrawNumberView} implementation.
@@ -90,6 +91,10 @@ public final class DrawNumberSwingView implements DrawNumberView {
         return showConfirmDialog(frame, question, name, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 
+    @SuppressFBWarnings(
+        value = "",
+        justification = "This System.exit(0) is required for exercise"
+    )
     @Override
     public void setController(final DrawNumberController observer) {
         this.controller = observer;

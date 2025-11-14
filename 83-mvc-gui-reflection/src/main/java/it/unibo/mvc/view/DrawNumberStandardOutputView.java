@@ -1,6 +1,7 @@
 package it.unibo.mvc.view;
 
 import it.unibo.mvc.api.DrawNumberView;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.mvc.api.DrawNumberController;
 import it.unibo.mvc.api.DrawResult;
 
@@ -19,6 +20,10 @@ public final class DrawNumberStandardOutputView implements DrawNumberView {
          */
     }
 
+    @SuppressFBWarnings(
+        value = "",
+        justification = "This System.exit(0) is required for exercise"
+    )
     @Override
     public void setController(final DrawNumberController observer) {
         this.controller = observer;
@@ -39,6 +44,10 @@ public final class DrawNumberStandardOutputView implements DrawNumberView {
      *
      * @return the controller
      */
+    @SuppressFBWarnings(
+        value = "EI",
+        justification = "Clients need to retrieve the controller in this implementation."
+    )
     public DrawNumberController getController() {
         return controller;
     }

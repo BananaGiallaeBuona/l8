@@ -6,7 +6,7 @@ import it.unibo.mvc.api.DrawNumberView;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Collection;
-//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class implements the game controller. It orchestrates the game, exposes methods to its observers
@@ -55,10 +55,10 @@ public final class DrawNumberControllerImpl implements DrawNumberController {
         this.model.reset();
     }
 
-    /*@SuppressFBWarnings(
+    @SuppressFBWarnings(
         value = "",
         justification = "This System.exit(0) is required for exercise"
-    ) */
+    ) 
     @Override
     public void quit() {
         /*
