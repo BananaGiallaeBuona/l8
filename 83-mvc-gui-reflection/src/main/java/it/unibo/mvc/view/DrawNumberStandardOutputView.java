@@ -36,7 +36,7 @@ public final class DrawNumberStandardOutputView implements DrawNumberView {
 
     @Override
     public void result(final DrawResult res) {
-        System.err.println(res); //NOPMD
+        System.out.println(res); //NOPMD
     }
 
     /**
